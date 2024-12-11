@@ -17,7 +17,10 @@ namespace Ces.WinForm.UI
             ChildContainer = this.pnlContainer;
 
             txtTextBox.KeyPress += TxtTextBox_KeyPress; // Add this line
+            txtTextBox.Click += TxtTextBox_Click;
         }
+
+     
 
         private Color currentBorderColor;
 
@@ -107,6 +110,18 @@ namespace Ces.WinForm.UI
             }
         }
 
+
+        private bool cesSelectAllWhenClick { get; set; }
+        [System.ComponentModel.Category("Ces TextBox")]
+        public bool CesSelectAllWhenClick
+        {
+            get { return CesSelectAllWhenClick; }
+            set
+            {
+                CesSelectAllWhenClick = value;
+                //txtTextBox.SelectAll();
+            }
+        }
         #endregion Properties
 
         #region Custom Methods
@@ -385,6 +400,14 @@ namespace Ces.WinForm.UI
         protected virtual void OnKeyEnterPress(object sender, KeyPressEventArgs e)
         {
             OnKeyEnter?.Invoke(sender, e);
+        }
+
+        private void TxtTextBox_Click(object? sender, EventArgs e)
+        {
+            if (cesSelectAllWhenClick)
+            {
+                txtTextBox.SelectAll();
+            }
         }
 
         #endregion Override Methods
