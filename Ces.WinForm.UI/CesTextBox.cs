@@ -9,6 +9,8 @@ namespace Ces.WinForm.UI
         {
             InitializeComponent();
             ChildContainer = this.pnlContainer;
+
+            txtTextBox.KeyPress += TxtTextBox_KeyPress; // Add this line
         }
 
         private Color currentBorderColor;
@@ -105,14 +107,7 @@ namespace Ces.WinForm.UI
 
         private void ValidateInputData()
         {
-            // ابتدا خطا را از کنترل لغو میکنیم و در زمان اعتبارسنجی اگر 
-            // اشکالی وجود داشته باشد اقدام به نمایش اعلان خطا میکنیم
             this.CesHasNotification = false;
-
-            // اگر نوع ورودی از نوع
-            // Any, Password
-            // باشد بنابراین فضای خالی نیز می تواند
-            // به عنوا مقدار ورودی پذیرفته شود در نتیجه نیاز به اعتبار سنجی ندارد
 
             if (CesInputType == CesInputTypeEnum.Any)
                 CesInputTypeEnumAnyValidation();
@@ -129,12 +124,12 @@ namespace Ces.WinForm.UI
 
         private void CesInputTypeEnumAnyValidation()
         {
-
+            // Custom validation logic for Any input type
         }
 
         private void CesInputTypeEnumPasswordValidation()
         {
-
+            // Custom validation logic for Password input type
         }
 
         private void CesInputTypeEnumNumberValidation()
@@ -150,7 +145,6 @@ namespace Ces.WinForm.UI
             if (inputValue.EndsWith("."))
                 return;
 
-            //var number = inputValue.Replace(",", "");
             inputValue = inputValue.Replace(",", "");
             var isValid = decimal.TryParse(inputValue, out decimal value);
 
@@ -166,7 +160,6 @@ namespace Ces.WinForm.UI
 
             var finalResult = integralPart.ToString("N0") + (decimalPart > 0 ? "." + decimalPart.ToString() : "");
 
-            // حرکت نشانگر به انتهای متن، تا عدد جدید در انتهای اعداد درج شود
             this.txtTextBox.Text = finalResult;
 
             if (decimalPart == 0)
@@ -343,6 +336,29 @@ namespace Ces.WinForm.UI
 
                 currentBorderColor = CesBorderColor;
                 CesBorderColor = Color.Silver;
+            }
+        }
+
+        private void TxtTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            OnTxtTextBoxKeyPress(sender, e);
+        }
+
+        protected virtual void OnTxtTextBoxKeyPress(object sender, KeyPressEventArgs e)
+        {
+            // Custom logic for KeyPress event
+            if (CesInputType == CesInputTypeEnum.Number)
+            {
+                if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.')
+                {
+                    e.Handled = true;
+                }
+
+                // Only allow one decimal point
+                if (e.KeyChar == '.' && (sender as TextBox).Text.IndexOf('.') > -1)
+                {
+                    e.Handled = true;
+                }
             }
         }
 
