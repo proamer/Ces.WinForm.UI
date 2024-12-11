@@ -5,6 +5,12 @@ namespace Ces.WinForm.UI
     [ToolboxItem(true)]
     public partial class CesTextBox : Infrastructure.CesControlBase
     {
+
+        //public event KeyPressEventArgs CustomKeyPress;
+        public event KeyPressEventHandler CustomKeyPress;
+        public event KeyPressEventHandler OnKeyEnter;
+
+
         public CesTextBox()
         {
             InitializeComponent();
@@ -341,25 +347,44 @@ namespace Ces.WinForm.UI
 
         private void TxtTextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
-            OnTxtTextBoxKeyPress(sender, e);
+            //OnTxtTextBoxKeyPress(sender, e);
+
+            OnCustomKeyPress(sender, e); // Raise the custom event 
+
+            if (e.KeyChar == (char)Keys.Enter)
+            {
+                OnKeyEnterPress(sender, e);
+            }
         }
 
-        protected virtual void OnTxtTextBoxKeyPress(object sender, KeyPressEventArgs e)
-        {
-            // Custom logic for KeyPress event
-            if (CesInputType == CesInputTypeEnum.Number)
-            {
-                if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.')
-                {
-                    e.Handled = true;
-                }
+        //protected virtual void OnTxtTextBoxKeyPress(object sender, KeyPressEventArgs e)
+        //{
+        //    // Custom logic for KeyPress event
+        //    if (CesInputType == CesInputTypeEnum.Number)
+        //    {
+        //        if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.')
+        //        {
+        //            e.Handled = true;
+        //        }
 
-                // Only allow one decimal point
-                if (e.KeyChar == '.' && (sender as TextBox).Text.IndexOf('.') > -1)
-                {
-                    e.Handled = true;
-                }
-            }
+        //        // Only allow one decimal point
+        //        if (e.KeyChar == '.' && (sender as TextBox).Text.IndexOf('.') > -1)
+        //        {
+        //            e.Handled = true;
+        //        }
+        //    }
+
+        //    OnCustomKeyPress(e); // Raise the custom event 
+        //}
+
+        protected virtual void OnCustomKeyPress(object sender, KeyPressEventArgs e)
+        {
+            CustomKeyPress?.Invoke(sender, e);
+        }
+
+        protected virtual void OnKeyEnterPress(object sender, KeyPressEventArgs e)
+        {
+            OnKeyEnter?.Invoke(sender, e);
         }
 
         #endregion Override Methods
